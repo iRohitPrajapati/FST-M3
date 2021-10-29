@@ -1,0 +1,31 @@
+#BUILD PHASE
+# Create Base
+FROM node:alpine as builder
+
+# Work Directory
+WORKDIR /usr/app
+
+# the container
+COPY ./package.json ./
+
+# NPM to install dependencies
+RUN npm install
+
+# Copy files from host System to container
+COPY . .
+
+#Default command
+CMD ["npm", "run", "build"]
+
+#RUN PHASE
+# Base Image
+FROM node:alpine
+
+#WORD
+WORKDIR /usr/app
+
+# Copy over the production files
+# to the nginx webroot
+COPY --from=builder /usr/app/build /usr/app
+
+CMD ["npm", "start"]
